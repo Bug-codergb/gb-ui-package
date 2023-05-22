@@ -1,0 +1,9 @@
+html{
+  font-size: 0.33333333vw;
+}
+:root{
+  --gb-danger:"#d17277";
+  --gb-warning:"#dfc184";
+  --gb-primary:"#3a76ba";
+  --gb-line:"#e3e5e7"
+}
