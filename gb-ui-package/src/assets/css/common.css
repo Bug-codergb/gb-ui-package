@@ -1,9 +1,14 @@
 html{
-  font-size: 0.33333333vw;
+  font-size: 2.0833333333vw;
 }
 :root{
   --gb-danger:"#d17277";
   --gb-warning:"#dfc184";
   --gb-primary:"#3a76ba";
   --gb-line:"#e3e5e7"
+}
+ul,li{
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }

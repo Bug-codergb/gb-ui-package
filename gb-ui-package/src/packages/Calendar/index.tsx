@@ -1,15 +1,22 @@
 import React, { memo } from "react";
+import Week from "../Week";
 import { CalendarWrapper } from "./style";
 import {
+  getCurrentMDays,
   getCurrentMfirstDay,
   getDataType,
   getMonthType,
   getYearType
 } from "../../utils/general";
 const Calendar = () => {
-  console.log(getCurrentMfirstDay("2023"));
+  const currentMonthDays = getCurrentMDays(new Date());
+  const firstDay:string = getCurrentMfirstDay(new Date());
+  const week = new Date(firstDay).getDay();
+  
   return (
-    <CalendarWrapper>11</CalendarWrapper>
+    <CalendarWrapper>
+      <Week/>
+    </CalendarWrapper>
   )
 }
 export default memo(Calendar);
