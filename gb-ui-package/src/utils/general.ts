@@ -1,6 +1,6 @@
 import { flushSync } from "react-dom";
 export type IGBTime = string | number | Date;
-
+export type IGBCalendar = {current:boolean,date:number|string,id:string}
 export function getDataType(data:any) {
   const type:string = Object.prototype.toString.call(data);
   let exp = /\s\w+/;
@@ -61,6 +61,20 @@ export function getCurrentMfirstDay(time:IGBTime) {
       return getDateStr(time as Date);
   }
 }
+
+export function getCurrentMlastDay(time:IGBTime) {
+  const type = getDataType(time);
+  let exp = /-\d{2}$/g;
+  switch (type) {
+    case 'date':
+      let dateStr = getDateStr(time as Date);
+      return dateStr.replace(exp, `-${getCurrentMDays(time)}`);
+    case "string":
+      return (time as string).replace(exp, `-${getCurrentMDays(time)}`)
+    default: 
+      return getDateStr(time as Date);
+  }
+}
 //
 export function getCurrentMDays(time:IGBTime) {
   const type = getDataType(time);
@@ -77,7 +91,7 @@ export function getCurrentMDays(time:IGBTime) {
         }
       } else {
         if (month + 1 === 2) {
-          return 29;
+          return 28;
         } else {
           return getMonthType(month + 1) === MonthType.n ? 31 : 30;
         }
@@ -85,4 +99,63 @@ export function getCurrentMDays(time:IGBTime) {
     default:
       return 31
   }
+}
+/**
+ * @n 前几个月
+ */
+export function getLastNmonth(n:number,time:IGBTime) {
+  const date = new Date(time);
+  let year = date.getFullYear();
+  let month = date.getMonth()+1;
+  let day = date.getDate();
+  
+  month = month - n;
+
+  if (month < 0) {
+    year - 1;
+  }
+  return `${year}-${month.toString().padStart(2,"0")}-${day.toString().padStart(2,"0")}`
+}
+export function getCurrentCalendar(time: IGBTime): IGBCalendar[] {
+  if (typeof time === "string") {
+    time = new Date(time);
+  }
+  const timeFirstDay = getCurrentMfirstDay(time);
+  const timeLastDay = getCurrentMlastDay(time);
+  
+  console.log(timeFirstDay,timeLastDay)
+  const timeFirstDayWeek = new Date(timeFirstDay).getDay();
+  const timeLastDayWeek = new Date(timeLastDay).getDay();
+  
+  const days:IGBCalendar[] = [];
+  const header = timeFirstDayWeek;
+  const tail = 7-timeLastDayWeek-1;
+  
+  for (let i = 1; i <= getCurrentMDays(time); i++){
+    days.push({
+      current: true,
+      date: i,
+      id:`i_${Math.random()}_${Math.random()}`
+    })
+  }
+  console.log(getLastNmonth(1,time))
+  if (header > 0) {
+    for (let i = 1; i <= header; i++){
+      days.unshift({
+        current: false,
+        date: getCurrentMDays(getLastNmonth(1,time)) - i+1,
+        id:`i_${Math.random()}_${Math.random()}`
+      })
+    }
+  }
+  if (tail > 0) {
+    for (let i = 1; i <= tail; i++){
+      days.push({
+        current: false,
+        date:i,
+        id:`i_${Math.random()}_${Math.random()}`
+      })
+    }
+  }
+  return days;
 }
