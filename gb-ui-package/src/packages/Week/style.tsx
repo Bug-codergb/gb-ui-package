@@ -14,7 +14,7 @@ export const WeekWrapper = styled.div<IStyle>`
       font-size: ${24 / 40}rem;
       width: ${props=>props.width / 40}rem;
       height: ${props => props.width / props.scale / 40}rem;
-      text-align: center;
+      text-align: right;
       vertical-align: middle;
       font-weight: 700;
     }

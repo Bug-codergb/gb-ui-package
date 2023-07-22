@@ -75,7 +75,7 @@ export function getCurrentMlastDay(time:IGBTime) {
       return getDateStr(time as Date);
   }
 }
-//
+
 export function getCurrentMDays(time:IGBTime) {
   const type = getDataType(time);
   switch (type) {
@@ -103,7 +103,7 @@ export function getCurrentMDays(time:IGBTime) {
 /**
  * @n 前几个月
  */
-export function getLastNmonth(n:number,time:IGBTime) {
+export function getBeforeNmonth(n:number,time:IGBTime) {
   const date = new Date(time);
   let year = date.getFullYear();
   let month = date.getMonth()+1;
@@ -116,8 +116,24 @@ export function getLastNmonth(n:number,time:IGBTime) {
   month = month - remainder>0 ? month-remainder:12 - Math.abs(month - remainder);
   year -= subYear;
   
-  return `${year}-${month.toString().padStart(2,"0")}-${day.toString().padStart(2,"0")}`
+  return `${year}-${Math.abs(month).toString().padStart(2,"0")}-${day.toString().padStart(2,"0")}`
 }
+export function getAfterNmonth(n:number,time:IGBTime) {
+  const date = new Date(time);
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  
+  const remainder = n % 12;
+
+  const isCurrentY = n !== 0 && remainder === 0 ? false : month + remainder <=12;
+  
+  let subYear = isCurrentY ? 0 : Math.ceil(n / 12);
+  month = month + remainder <=12 ? month+remainder : 12 - Math.abs(month + remainder);
+  year += subYear;
+  return `${year}-${Math.abs(month).toString().padStart(2,"0")}-${day.toString().padStart(2,"0")}`
+}
+
 export function getCurrentCalendar(time: IGBTime): IGBCalendar[] {
   if (typeof time === "string") {
     time = new Date(time);
@@ -125,7 +141,6 @@ export function getCurrentCalendar(time: IGBTime): IGBCalendar[] {
   const timeFirstDay = getCurrentMfirstDay(time);
   const timeLastDay = getCurrentMlastDay(time);
   
-  console.log(timeFirstDay,timeLastDay)
   const timeFirstDayWeek = new Date(timeFirstDay).getDay();
   const timeLastDayWeek = new Date(timeLastDay).getDay();
   
@@ -140,12 +155,12 @@ export function getCurrentCalendar(time: IGBTime): IGBCalendar[] {
       id:`i_${Math.random()}_${Math.random()}`
     })
   }
-  console.log(getLastNmonth(1,time))
+  
   if (header > 0) {
     for (let i = 1; i <= header; i++){
       days.unshift({
         current: false,
-        date: getCurrentMDays(getLastNmonth(1,time)) - i+1,
+        date: getCurrentMDays(getBeforeNmonth(1,time)) - i+1,
         id:`i_${Math.random()}_${Math.random()}`
       })
     }

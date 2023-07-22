@@ -4,7 +4,7 @@ import { CrumbWrapper } from "./style";
 import { IProps} from "./props/index";
 import { getDateStr } from "../../../../utils/general";
 const Crumb: FC<IProps> = (props) => {
-  const { date,width,pre:propsPrev,next:propNext } = props;
+  const { date,width,pre:propsPrev,next:propNext,current:propCurrent } = props;
   const dateProps: string = typeof date === "undefined" ?
     getDateStr(new Date()) :
     typeof date === "string" ? date : getDateStr(date as Date); 
@@ -19,6 +19,11 @@ const Crumb: FC<IProps> = (props) => {
       propNext()
     }
   }
+  const current = () => {
+    if (propCurrent) {
+      propCurrent()
+    }
+  }
   return <CrumbWrapper width={width??'auto'}>
     <div className="left-container">
       { dateProps }
@@ -26,7 +31,7 @@ const Crumb: FC<IProps> = (props) => {
     <div className="right-container">
       <ul className="controller">
         <li onClick={()=>prev()}>last</li>
-        <li>今天</li>
+        <li onClick={ ()=>current()}>今天</li>
         <li onClick={()=>next()}>next</li>
       </ul>
     </div>

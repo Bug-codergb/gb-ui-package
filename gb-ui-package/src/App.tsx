@@ -1,6 +1,7 @@
 import React, { memo, FC, ReactElement } from "react";
 import Button from "./packages/Button";
 import Calendar from "./packages/Calendar/index";
+import "./style.css";
 const App:FC = ():ReactElement => {
   return (
     <div>

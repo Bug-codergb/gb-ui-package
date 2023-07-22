@@ -10,9 +10,10 @@ import {
   getCurrentMfirstDay,
   getCurrentMlastDay,
   getDataType,
-  getLastNmonth,
+  getBeforeNmonth,
   getMonthType,
-  getYearType
+  getYearType,
+  getAfterNmonth
 } from "../../utils/general";
 import { IProps } from "./props/index"
 import TimeType from "./common/TimeType";
@@ -34,26 +35,30 @@ const Calendar: FC<IProps> = (props) => {
       days.slice(i,i+7)
     )
   }
-  console.log(calendar)
+  console.log(getAfterNmonth(6,new Date()))
   const prev = () => {
-    const lastDate = getLastNmonth(1,currentDate);
+    const lastDate = getBeforeNmonth(1,currentDate);
     setCurrentDate(new Date(lastDate));
   }
   const next = () => {
-    console.log('next');
+    const lastDate = getAfterNmonth(1, currentDate);
+    setCurrentDate(new Date(lastDate));
+  }
+  const current = () => {
+    setCurrentDate(new Date());
   }
   return (
     <CalendarWrapper width={widthProps} scale={scale}>
       <TimeType width={widthProps*7}/>
-      <Crumb date={currentDate} width={widthProps*7} pre={()=>prev()} next={()=>next()}/>
-      <Week />
+      <Crumb date={currentDate} width={widthProps*7} pre={()=>prev()} next={()=>next()} current={()=>current()}/>
+      <Week width={widthProps}/>
       <ul className="days">
         {
           calendar.map((item, index) => {
-            return <li key={ index}>
+            return <li key={index} className={index>0?'need-move':'' }>
               {
                 item.map((row,i) => {
-                  return <li key={row.id} className={`item ${row.current ? '':'no-current'}`}>{row.date}</li>
+                  return <li key={row.id} className={`item ${row.current ? '':'no-current'}${i>0?' need-move':''}`}>{row.date}</li>
                 })
               }
             </li>
