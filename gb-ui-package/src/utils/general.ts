@@ -109,11 +109,13 @@ export function getLastNmonth(n:number,time:IGBTime) {
   let month = date.getMonth()+1;
   let day = date.getDate();
   
-  month = month - n;
+  const remainder = n % 12;
 
-  if (month < 0) {
-    year - 1;
-  }
+  const isCurrentY = n!==0 && remainder===0 ? false : month - remainder > 0;
+  let subYear = isCurrentY ? 0 : Math.ceil(n / 12);
+  month = month - remainder>0 ? month-remainder:12 - Math.abs(month - remainder);
+  year -= subYear;
+  
   return `${year}-${month.toString().padStart(2,"0")}-${day.toString().padStart(2,"0")}`
 }
 export function getCurrentCalendar(time: IGBTime): IGBCalendar[] {

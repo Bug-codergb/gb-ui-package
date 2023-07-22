@@ -1,4 +1,6 @@
-import React, { memo,FC } from "react";
+import React, {
+  memo, FC, useState
+} from "react";
 import Week from "../Week";
 import { CalendarWrapper } from "./style";
 import {
@@ -8,6 +10,7 @@ import {
   getCurrentMfirstDay,
   getCurrentMlastDay,
   getDataType,
+  getLastNmonth,
   getMonthType,
   getYearType
 } from "../../utils/general";
@@ -22,7 +25,9 @@ const Calendar: FC<IProps> = (props) => {
   let widthProps = width || 220;
   let scale = 1.67;
 
-  let days = getCurrentCalendar(new Date())
+  const [currentDate,setCurrentDate] = useState<Date>(new Date());
+  let days = getCurrentCalendar(currentDate);
+
   let calendar:IGBCalendar[][]  = [];
   for (let i = 0; i < days.length; i+=7){
     calendar.push(
@@ -30,10 +35,17 @@ const Calendar: FC<IProps> = (props) => {
     )
   }
   console.log(calendar)
+  const prev = () => {
+    const lastDate = getLastNmonth(1,currentDate);
+    setCurrentDate(new Date(lastDate));
+  }
+  const next = () => {
+    console.log('next');
+  }
   return (
     <CalendarWrapper width={widthProps} scale={scale}>
       <TimeType width={widthProps*7}/>
-      <Crumb date={new Date()} width={widthProps*7}/>
+      <Crumb date={currentDate} width={widthProps*7} pre={()=>prev()} next={()=>next()}/>
       <Week />
       <ul className="days">
         {
@@ -41,7 +53,7 @@ const Calendar: FC<IProps> = (props) => {
             return <li key={ index}>
               {
                 item.map((row,i) => {
-                  return <li key={row.id} className="item">{row.date}</li>
+                  return <li key={row.id} className={`item ${row.current ? '':'no-current'}`}>{row.date}</li>
                 })
               }
             </li>

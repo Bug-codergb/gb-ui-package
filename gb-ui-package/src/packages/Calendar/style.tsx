@@ -16,6 +16,9 @@ export const CalendarWrapper = styled.div<IStyle>`
         height: ${props=>props.width/props.scale/40}rem;
         border: 1px solid #e5e5e5;
       }
+      .no-current{
+        color: #bdbdbd;
+      }
     }
   }
 `
