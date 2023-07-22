@@ -4,7 +4,7 @@ import Calendar from "./packages/Calendar/index";
 const App:FC = ():ReactElement => {
   return (
     <div>
-      <Button type={'wanring'} text="点击" />
+      {/* <Button type={'wanring'} text="点击" /> */}
       <Calendar/>
     </div>
   )

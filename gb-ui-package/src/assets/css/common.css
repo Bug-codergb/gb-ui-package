@@ -1,6 +1,9 @@
 html{
   font-size: 2.0833333333vw;
 }
+*{
+  box-sizing: border-box;
+}
 :root{
   --gb-danger:"#d17277";
   --gb-warning:"#dfc184";

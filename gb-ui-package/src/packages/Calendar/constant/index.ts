@@ -1,0 +1,1 @@
+export const timeType = ["日","周","月","年"];

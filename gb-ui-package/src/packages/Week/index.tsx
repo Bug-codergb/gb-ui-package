@@ -1,9 +1,11 @@
-import React, { memo } from "react";
+import React, { memo ,FC} from "react";
 import { WeekWrapper } from "./style";
 import { week } from "../../constant/week";
-const Week = () => {
+import {IProps } from "./props/index"
+const Week: FC<IProps> = (props) => {
+  const {width=200,scale=2.7 } = props;
   return (
-    <WeekWrapper>
+    <WeekWrapper width={200} scale={scale}>
       <ul className="week-list"> 
       {
         week.map((item, index) => {
