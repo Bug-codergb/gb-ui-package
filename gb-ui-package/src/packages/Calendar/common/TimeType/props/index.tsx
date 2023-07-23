@@ -1,5 +1,6 @@
 interface IProps{
-  width?:number
+  width?: number,
+  click?:(type:string)=>void
 }
 export type {
   IProps

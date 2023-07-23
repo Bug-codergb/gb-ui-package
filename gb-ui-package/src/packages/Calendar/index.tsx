@@ -18,7 +18,9 @@ import {
 import { IProps } from "./props/index"
 import TimeType from "./common/TimeType";
 import Crumb from "./common/Crumb";
-
+import Days from "./common/Days";
+import Hours from "./common/Hours";
+import { DAY, MONTH } from "./constant";
 const Calendar: FC<IProps> = (props) => {
 
   const {width } = props;
@@ -47,24 +49,18 @@ const Calendar: FC<IProps> = (props) => {
   const current = () => {
     setCurrentDate(new Date());
   }
+
+  const [timeType,setTimeType] = useState<string>(DAY);
+  const timeTypeChangeHandler = (e:string) => {
+    setTimeType(e);
+  }
   return (
     <CalendarWrapper width={widthProps} scale={scale}>
-      <TimeType width={widthProps*7}/>
+      <TimeType width={widthProps * 7} click={(e:string)=>timeTypeChangeHandler(e) } />
       <Crumb date={currentDate} width={widthProps*7} pre={()=>prev()} next={()=>next()} current={()=>current()}/>
-      <Week width={widthProps}/>
-      <ul className="days">
-        {
-          calendar.map((item, index) => {
-            return <li key={index} className={index>0?'need-move':'' }>
-              {
-                item.map((row,i) => {
-                  return <li key={row.id} className={`item ${row.current ? '':'no-current'}${i>0?' need-move':''}`}>{row.date}</li>
-                })
-              }
-            </li>
-          })
-        }
-      </ul>
+      <Week width={widthProps} />
+      {timeType === DAY && <Hours width={widthProps * 7} calendar={calendar} itemWidth={ widthProps} />}
+      {timeType === MONTH &&<Days calendar={calendar}/>}
     </CalendarWrapper>
   )
 }
