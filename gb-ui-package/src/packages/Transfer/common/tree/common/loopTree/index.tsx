@@ -11,10 +11,11 @@ interface IInput{
 };
 
 interface IProps{
-  data:any[]
+  data: any[],
+  changeNode:(node:any,status:boolean,isAllEmpty:boolean)=>void
 }
 const LoopTree: FC<IProps> = (props) => {
-  const { data : dataProp} = props;
+  const { data : dataProp,changeNode} = props;
   const [data, setData] = useState(dataProp);
  
   useEffect(() => {
@@ -47,16 +48,84 @@ const LoopTree: FC<IProps> = (props) => {
       selectChildren(item.children, e);
     }
   }
-  const selectChangeHandler = (e:boolean,item:any,index:number) => {
-    const children = item.children ? [...item.children] :[];
-    selectChildren(children, e);
-
+   
+  const selectChangeHandler = (e: boolean, item: any, index: number) => {
+  
+    selectChildren(item.children, e);
+    
     item.el = item.inputRef.current.inputRef;
+    
     item.isSelect = e;
-    item.children = children;
+
+    item.parentEl = item.parentNode?.inputRef.current.inputRef;
+  
+    /*const _parent = item.parentNode ?? {};
+    if (_parent && Object.keys(_parent).length !== 0) {
+      const children = item.parentNode.children || [];
+      const selectAll = children.every((item) => {
+        return item.isSelect !== undefined && item.isSelect === true;
+      })
+      if (selectAll) {
+        item.parentEl ? item.parentEl.indeterminate = false : "";
+        item.parentNode.isSelect = true;
+        item.parentEl.checked = true;
+        selectParent(item.parentNode, true);
+        
+        console.log(item);
+      } else {
+        selectParent(item, true);
+        const allEmpty = children.every((item) => {
+          return item.isSelect === undefined || item.isSelect === false;
+        })
+        if (allEmpty) {
+          item.parentEl ? item.parentEl.indeterminate = false : "";
+          item.parentNode.isSelect = false;
+        item.parentEl.checked = false;
+        } else {
+          item.parentEl ? item.parentEl.indeterminate = true : "";
+        }
+        
+      }
+    }*/
+    console.log(item);
+
     let arr = [...data];
     arr[index] = item;
-    item.el.indeterminate = true
+    //item.el.indeterminate = true
+    setData(arr);
+    console.log(data)
+
+    
+
+    const _parent = item.parentNode ?? {};
+    let parentStatus = false,isAllEmpty = true;
+    if (_parent && Object.keys(_parent).length !== 0) {
+      const children = item.parentNode.children || [];
+      const selectAll = children.every((item) => {
+        return item.isSelect !== undefined && item.isSelect === true;
+      })
+      if (selectAll) {
+        parentStatus = true;
+      } else {
+        parentStatus = false;
+      }
+      isAllEmpty = children.every((item:any) => {
+        return item.isSelect == undefined || item.isSelect === false;
+      })
+    }
+    changeNode(item.parentNode,parentStatus,isAllEmpty);
+  }
+
+  const changeNodeHandler = (item:any,status:boolean,allEmpty:boolean,index:number) => {
+    item.isSelect = status;
+    console.log(item,allEmpty);
+    if (!status && !allEmpty) {
+      item.inputRef.current.inputRef.indeterminate = true;
+    } else {
+      item.inputRef.current.inputRef.indeterminate = false;
+    }
+    const arr = [...data];
+    arr[index] = item;
     setData(arr);
   }
   return (
@@ -78,7 +147,9 @@ const LoopTree: FC<IProps> = (props) => {
                 <div
                     style={{ height: item.isExpand ? "auto":"0px" }}
                     className="children-container">
-                  <LoopTree data={ item.children} />
+                    <LoopTree
+                      data={item.children}
+                      changeNode={(row, status, allEmpty) => changeNodeHandler(row, status, allEmpty,index)} />
                 </div>
               }
             </li>

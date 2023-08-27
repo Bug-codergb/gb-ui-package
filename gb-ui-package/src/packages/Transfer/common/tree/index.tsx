@@ -15,12 +15,12 @@ const Tree: FC<IProps> = (props) :ReactElement=> {
   const [data, setData] = useState<any>(deepClone(dataProp));
   useEffect(() => {
     if (data && data.length !== 0) {
-      levelTree(data);
+      //levelTree(data);
     }
   }, [dataProp])
   return (
     <TreeWrapper>
-      <LoopTree data={data}/>
+      <LoopTree data={data} changeNode={(a,b)=>{}}/>
     </TreeWrapper>
   )
 }
