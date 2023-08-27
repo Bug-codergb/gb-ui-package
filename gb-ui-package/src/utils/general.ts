@@ -1,4 +1,3 @@
-import { flushSync } from "react-dom";
 export type IGBTime = string | number | Date;
 export type IGBCalendar = {current:boolean,date:number|string,id:string}
 export function getDataType(data:any) {
@@ -175,4 +174,10 @@ export function getCurrentCalendar(time: IGBTime): IGBCalendar[] {
     }
   }
   return days;
+}
+export function isObject(value:any) {
+  return value !== null && typeof value === "object";
+}
+export function isArray(value: any) {
+  return Array.isArray(value)
 }
