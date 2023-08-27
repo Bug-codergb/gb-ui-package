@@ -1,26 +1,59 @@
 import React, { memo, FC, ReactElement ,useState, useEffect} from "react";
-import SelectItem from "../selectItem";
 import {
   TreeWrapper
 } from "./style";
 
 import LoopTree from "./common/loopTree";
 import { deepClone } from "../../../../utils/array";
-import { levelTree } from "../../../../utils/levelTree";
+
 interface IProps{
-  data:any[]
+  keyProps: string;
+  data: any[];
+  selectChangle: (
+    parentNode: any,
+    parentStatus: boolean,
+    isAllEmpty: boolean,
+    item: any, status: boolean,
+    link: any
+  ) => void
 }
 const Tree: FC<IProps> = (props) :ReactElement=> {
-  const { data: dataProp } = props;
+  const { data: dataProp ,selectChangle:selectChangleProp,keyProps} = props;
   const [data, setData] = useState<any>(deepClone(dataProp));
   useEffect(() => {
-    if (data && data.length !== 0) {
-      //levelTree(data);
+    console.log(dataProp);
+    if (dataProp && dataProp.length !== 0) {
+      setData(dataProp);
+    } else {
+      setData([])
     }
-  }, [dataProp])
+  }, [dataProp]);
+  const selectChange = (
+    parentNode: any,
+    parentStatus: boolean,
+    isAllEmpty: boolean,
+    item: any,
+    status: boolean,
+    link:any
+  ) => {
+    //console.log(parentNode, item);
+    selectChangleProp(parentNode, parentStatus, isAllEmpty, item, status,link);
+  }
   return (
     <TreeWrapper>
-      <LoopTree data={data} changeNode={(a,b)=>{}}/>
+      <LoopTree
+        data={data}
+        key={keyProps}
+        keyProp={keyProps}
+        changeNode={
+          (
+            parentNode: any,
+            parentStatus: boolean,
+            isAllEmpty: boolean,
+            item: any,
+            status: boolean,
+            link:any) => selectChange(parentNode, parentStatus, isAllEmpty, item, status,link)
+        } />
     </TreeWrapper>
   )
 }

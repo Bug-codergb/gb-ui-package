@@ -33,7 +33,8 @@ export function deleteChildren(arr: any[], children: any[], key: string) {
   }
   
 }
-export function deepClone(raw:Array<any>|Object) {
+export function deepClone(raw: Array<any> | Object) {
+
   let res: any = {};
   if (isArray(raw)) {
     res=[]

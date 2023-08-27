@@ -10,9 +10,11 @@ export function levelTree(data: any[], options?: { key: string, value: any }) {
             node[key] = typeof value === 'function' ? value():value;
           }
           if (node.children && node.children.length!==0) {
-            for (let item of node.children) {
-              item.parentNode = node;
-              queue.push(item);
+            for (let item of node.children) { 
+              if (item) {
+                item.parentNode = node;
+                queue.push(item);
+                }
             }
           }
         }

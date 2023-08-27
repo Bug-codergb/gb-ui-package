@@ -1,15 +1,26 @@
 import React, {
-  memo, FC, ReactElement, useState, useEffect, useLayoutEffect
-  
+  memo,
+  FC,
+  ReactElement,
+  useState,
+  useLayoutEffect,
+  useCallback
 } from "react";
-import {deleteFromArr,deleteChildren,deepClone } from "../../utils/array";
+import {
+  deleteFromArr,
+  deleteChildren,
+  deepClone
+} from "../../utils/array";
 import SelectItem from "./common/selectItem/index";
 import Tree from "./common/tree/index";
 import {
   TransferWrapper,
   LeftContainer,
   RightContainer
-} from "./style"
+} from "./style";
+
+import {generateTree, mergeTree } from "./utils/index"
+
 interface IProps{
   source: any[],
   target:any[]
@@ -21,18 +32,28 @@ const Transfer: FC<IProps> = (props):ReactElement => {
   const [sourceSelect, setSourceSelect] = useState<any[]>([]);
   const [targetSelect, setTargetSelect] = useState<any[]>([]);
 
-  const [target, setTarget] = useState<any[]>(deepClone(targetProp));
+  const [target, setTarget] = useState<any[]>([]);
   useLayoutEffect(() => {
     if (target.length !== 0) {
+      
       let arr = [...source];
       deleteChildren(arr, target, "id");
       setSource(arr);
     }
   }, [])
   
-  const selectItemChangeHandler = (isSelect: boolean, item: any, alias: string) => {
-    
-    if (!isSelect) {
+  let preLink:any = null;
+  const selectItemChangeHandler = (isSelect: boolean, item: any, alias: string,link:any) => {
+    //console.log(link, isSelect);
+    const cloneLink = generateTree(link);
+    if (preLink) {
+      mergeTree(preLink,cloneLink);
+    } else {
+      preLink = cloneLink; 
+    }
+    console.log(preLink)
+    if(preLink)setSourceSelect(preLink);
+    /*if (!isSelect) {
       const arr = alias === 'left' ? [...sourceSelect] : [...targetSelect];
       deleteFromArr(arr,undefined,{key:'id',value:item.id});
       alias==='left' ? setSourceSelect(arr) :setTargetSelect(arr);
@@ -40,25 +61,28 @@ const Transfer: FC<IProps> = (props):ReactElement => {
       const arr = alias === 'left' ? [...sourceSelect]: [...targetSelect];
       arr.push(item);
       alias === 'left' ? setSourceSelect(arr) : setTargetSelect(arr);
-    }
+    }*/
   }
 
   
   const rightClickHandler = () => {
+    console.log(sourceSelect)
     if (sourceSelect.length === 0) {
       
-    } else {
-      const temp = [...target];
-      for (let item of sourceSelect) {
-        temp.push(item);
-      }
-      setTarget(temp);
+    } else { 
+      // const temp = [...target];
+      // for (let item of sourceSelect) {
+      //   temp.push(item);
+      // }
+      // setTarget(temp);
       
-      setSourceSelect([]);
+      // setSourceSelect([]);
 
-      const arr = [...source];
-      deleteChildren(arr, sourceSelect, "id");
-      setSource(arr);
+      // const arr = [...source];
+      // deleteChildren(arr, sourceSelect, "id");
+      // setSource(arr);
+      let arr = [...sourceSelect];
+      setTarget(arr);
     }
   }
   const leftClickHandler = () => {
@@ -78,28 +102,48 @@ const Transfer: FC<IProps> = (props):ReactElement => {
       setTarget(temp);
     }
   }
+  const selectLeftChangleHandler = useCallback(
+    (
+      parentNode:any,
+      parentStatus:boolean,
+      isAllEmpty:boolean,
+      item:any,
+      status:boolean,
+      link:any
+    ) => {
+      selectItemChangeHandler(status, item, "left",link)
+    }, [])
+  
+    const selectRightChangleHandler = useCallback(
+      (
+        parentNode:any,
+        parentStatus:boolean,
+        isAllEmpty:boolean,
+        item:any,
+        status:boolean,
+        link:any
+      ) => {
+        selectItemChangeHandler(status, item, "right",link)
+      }, [])
+  
   return <TransferWrapper>
     <LeftContainer>
-      <Tree data={ source} />
+      <Tree
+        key={'left'}
+        keyProps="left"
+        data={source}
+        selectChangle={selectLeftChangleHandler} />
     </LeftContainer>
     <div className="controller">
       <div className="right" onClick={()=>rightClickHandler()}>向右</div>
       <div className="left" onClick={()=>leftClickHandler()}>向左</div>
     </div>
     <RightContainer>
-      <ul>
-        {
-          target && target.map((item, index) => {
-            return <li key={item.id}>
-              <SelectItem
-                id={item.id}
-                name={item.name}
-                expandClick={(e)=>{}}
-                selectChange={(e: boolean) => selectItemChangeHandler(e,item,'right')} />
-            </li>
-          })
-        }
-      </ul>
+      <Tree
+        key={'right'}
+        keyProps="right"
+        data={target}
+        selectChangle={selectRightChangleHandler} />
     </RightContainer>
   </TransferWrapper>
 }

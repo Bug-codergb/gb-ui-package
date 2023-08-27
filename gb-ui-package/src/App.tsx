@@ -45,6 +45,7 @@ const App: FC = (): ReactElement => {
         source={
           [
             {
+              parentId:-1,
               id: 1001,
               name:"JavaScript"
             },
@@ -91,7 +92,80 @@ const App: FC = (): ReactElement => {
             },
             {
               id: 1005,
-              name:"go"
+              name: "go",
+              children: [
+                {
+                  id: 10051,
+                  parentId: 1005,
+                  name: "云原生",
+                },
+                {
+                  id: 10052,
+                  parentId: 1005,
+                  name: "大数据",
+                },
+                {
+                  id: 10053,
+                  parentId: 1005,
+                  name: "人工智能",
+                },
+                {
+                  id: 10054,
+                  parentId: 1005,
+                  name: "移动互联网",
+                  children: [
+                    {
+                      id: 100541,
+                      parentId: 10054,
+                      name: "flutter",
+                    },
+                    {
+                      id: 100542,
+                      parentId: 10054,
+                      name: "rn",
+                    },
+                    {
+                      id: 100543,
+                      parentId: 10054,
+                      name: "uniapp",
+                      children: [
+                        {
+                          id: 1005431,
+                          parentId: 100543,
+                          name: "hbuilder",
+                        },
+                        {
+                          id: 1005432,
+                          parentId: 100543,
+                          name: "vscode",
+                          children: [
+                            {
+                              id: 10054321,
+                              parentId: 1005432,
+                              name: "elsint",
+                            },
+                            {
+                              id: 10054322,
+                              parentId: 1005432,
+                              name: "prettier",
+                            },
+                            {
+                              id: 10054323,
+                              parentId: 1005432,
+                              name: "abyin",
+                            },
+                          ]
+                        }
+                      ]
+                    },
+                  ]
+                },
+                {
+                  id: 10055,
+                  parentId: 1005,
+                  name: "app",
+                }
+              ]
             },
             {
               id: 1006,

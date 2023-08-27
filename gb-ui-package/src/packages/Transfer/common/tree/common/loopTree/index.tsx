@@ -1,8 +1,8 @@
-import React, { memo, FC, ReactElement,useState ,createRef, useEffect} from "react";
+import React, { memo, FC, ReactElement,useState ,createRef, useEffect, useLayoutEffect} from "react";
 import {
   LoopTreeWrapper
 } from "./style";
-import { deepClone } from "../../../../../../utils/array";
+
 import SelectItem from "../../../selectItem";
 import { levelTree } from "../../../../../../utils/levelTree";
 
@@ -11,16 +11,18 @@ interface IInput{
 };
 
 interface IProps{
+  keyProp: string;
   data: any[],
-  changeNode:(node:any,status:boolean,isAllEmpty:boolean)=>void
+  changeNode:(parentNode:any,parentStatus:boolean,isAllEmpty:boolean,item:any,status:boolean,link:any)=>void
 }
 const LoopTree: FC<IProps> = (props) => {
-  const { data : dataProp,changeNode} = props;
-  const [data, setData] = useState(dataProp);
+  const { data : dataProp=[],changeNode} = props;
  
+  const [tree, setTree] = useState<any>([]);
   useEffect(() => {
-    if (data) {
-      let dataArr = [...data];
+    if (dataProp) {
+      let dataArr = [...dataProp];
+      console.log(dataArr)
       levelTree(
         dataArr,
         {
@@ -28,16 +30,20 @@ const LoopTree: FC<IProps> = (props) => {
           value:()=>createRef<IInput>()
         }
       );
-      setData(dataArr);
+      setTree(dataArr);
     }
-
+    
+  }, [dataProp])
+  
+  useEffect(() => {
+    
   }, []);
 
   const expandClickHandler = (e: boolean, item: any, index: number) => {
     item.isExpand = !item.isExpand;
-    let arr = [...data];
+    let arr = [...tree];
     arr[index] = item;
-    setData(arr);
+    setTree(arr);
   }
   function selectChildren(children: any[], e: boolean) {
     if (!children || children.length === 0) {
@@ -49,54 +55,22 @@ const LoopTree: FC<IProps> = (props) => {
     }
   }
    
-  const selectChangeHandler = (e: boolean, item: any, index: number) => {
-  
-    selectChildren(item.children, e);
+  //最底层子组件处理
+  const selectChangeHandler = (e: boolean, item: any, index: number,type:'auto'|'handle',link:any) => {
+
+    if(type==='handle') selectChildren(item.children, e);
     
     item.el = item.inputRef.current.inputRef;
     
     item.isSelect = e;
 
     item.parentEl = item.parentNode?.inputRef.current.inputRef;
-  
-    /*const _parent = item.parentNode ?? {};
-    if (_parent && Object.keys(_parent).length !== 0) {
-      const children = item.parentNode.children || [];
-      const selectAll = children.every((item) => {
-        return item.isSelect !== undefined && item.isSelect === true;
-      })
-      if (selectAll) {
-        item.parentEl ? item.parentEl.indeterminate = false : "";
-        item.parentNode.isSelect = true;
-        item.parentEl.checked = true;
-        selectParent(item.parentNode, true);
-        
-        console.log(item);
-      } else {
-        selectParent(item, true);
-        const allEmpty = children.every((item) => {
-          return item.isSelect === undefined || item.isSelect === false;
-        })
-        if (allEmpty) {
-          item.parentEl ? item.parentEl.indeterminate = false : "";
-          item.parentNode.isSelect = false;
-        item.parentEl.checked = false;
-        } else {
-          item.parentEl ? item.parentEl.indeterminate = true : "";
-        }
-        
-      }
-    }*/
-    console.log(item);
 
-    let arr = [...data];
+    let arr = [...tree];
     arr[index] = item;
-    //item.el.indeterminate = true
-    setData(arr);
-    console.log(data)
-
     
-
+    setTree(arr);
+  
     const _parent = item.parentNode ?? {};
     let parentStatus = false,isAllEmpty = true;
     if (_parent && Object.keys(_parent).length !== 0) {
@@ -104,6 +78,7 @@ const LoopTree: FC<IProps> = (props) => {
       const selectAll = children.every((item) => {
         return item.isSelect !== undefined && item.isSelect === true;
       })
+      //console.log(selectAll,children);
       if (selectAll) {
         parentStatus = true;
       } else {
@@ -113,26 +88,32 @@ const LoopTree: FC<IProps> = (props) => {
         return item.isSelect == undefined || item.isSelect === false;
       })
     }
-    changeNode(item.parentNode,parentStatus,isAllEmpty);
+    changeNode(item.parentNode,parentStatus,isAllEmpty,item,e,link);//发送给父组件
   }
 
-  const changeNodeHandler = (item:any,status:boolean,allEmpty:boolean,index:number) => {
+  //父组件处理
+  const changeNodeHandler = (item: any, status: boolean, allEmpty: boolean, index: number, link: any) => {
+    item && (item.next = link);
     item.isSelect = status;
-    console.log(item,allEmpty);
-    if (!status && !allEmpty) {
+    //console.log(item);
+    if ((!status && !allEmpty) || item.children.some((child)=>child.indeterminate === true)) {
       item.inputRef.current.inputRef.indeterminate = true;
+      item.indeterminate = true;
     } else {
       item.inputRef.current.inputRef.indeterminate = false;
+      item.indeterminate = false;
     }
-    const arr = [...data];
+    const arr = [...tree];
     arr[index] = item;
-    setData(arr);
+    setTree(arr);
+
+    selectChangeHandler(status,item,index,'auto',item);
   }
   return (
     <LoopTreeWrapper>
       <ul>
         {
-          data && data.map((item, index) => {
+          tree && tree.map((item, index) => {
             return <li key={item.id}>
               <SelectItem
                 key={item.id}
@@ -141,7 +122,7 @@ const LoopTree: FC<IProps> = (props) => {
                 name={item.name}
                 isSelect={item.isSelect}
                 expandClick={(e)=>expandClickHandler(e,item,index)}
-                selectChange={(e: boolean) => selectChangeHandler(e,item,index)} />
+                selectChange={(e: boolean) => selectChangeHandler(e,item,index,'handle',item)} />
               {
                 item.children && item.children.length !== 0 &&
                 <div
@@ -149,7 +130,10 @@ const LoopTree: FC<IProps> = (props) => {
                     className="children-container">
                     <LoopTree
                       data={item.children}
-                      changeNode={(row, status, allEmpty) => changeNodeHandler(row, status, allEmpty,index)} />
+                      keyProp={item.id}
+                      changeNode={
+                        (row, parentStatus, allEmpty, item, status, link) => changeNodeHandler(row, parentStatus, allEmpty, index,link)
+                      } />
                 </div>
               }
             </li>
