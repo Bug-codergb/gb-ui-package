@@ -19,7 +19,8 @@ interface IProps{
 }
 const Tree: FC<IProps> = (props) :ReactElement=> {
   const { data: dataProp ,selectChangle:selectChangleProp,keyProps} = props;
-  const [data, setData] = useState<any>(deepClone(dataProp));
+  //const [data, setData] = useState<any>(deepClone(dataProp));
+  const [data, setData] = useState<any>(dataProp);
   useEffect(() => {
     console.log(dataProp);
     if (dataProp && dataProp.length !== 0) {
@@ -52,7 +53,8 @@ const Tree: FC<IProps> = (props) :ReactElement=> {
             isAllEmpty: boolean,
             item: any,
             status: boolean,
-            link:any) => selectChange(parentNode, parentStatus, isAllEmpty, item, status,link)
+            link: any
+          ) => selectChange(parentNode, parentStatus, isAllEmpty, item, status, link)
         } />
     </TreeWrapper>
   )

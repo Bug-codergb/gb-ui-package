@@ -1,4 +1,12 @@
-import React, { memo, FC, ReactElement,useState ,createRef, useEffect, useLayoutEffect} from "react";
+import React, {
+  memo,
+  FC,
+  ReactElement,
+  useState,
+  createRef,
+  useEffect,
+  useLayoutEffect
+} from "react";
 import {
   LoopTreeWrapper
 } from "./style";
@@ -35,10 +43,6 @@ const LoopTree: FC<IProps> = (props) => {
     
   }, [dataProp])
   
-  useEffect(() => {
-    
-  }, []);
-
   const expandClickHandler = (e: boolean, item: any, index: number) => {
     item.isExpand = !item.isExpand;
     let arr = [...tree];
@@ -114,6 +118,7 @@ const LoopTree: FC<IProps> = (props) => {
       <ul>
         {
           tree && tree.map((item, index) => {
+            const children = item.children ? [...item.children] : [];
             return <li key={item.id}>
               <SelectItem
                 key={item.id}
@@ -129,8 +134,9 @@ const LoopTree: FC<IProps> = (props) => {
                     style={{ height: item.isExpand ? "auto":"0px" }}
                     className="children-container">
                     <LoopTree
-                      data={item.children}
+                      data={children}
                       keyProp={item.id}
+                      key={item.id}
                       changeNode={
                         (row, parentStatus, allEmpty, item, status, link) => changeNodeHandler(row, parentStatus, allEmpty, index,link)
                       } />

@@ -10,6 +10,8 @@ import Transfer from "./packages/Transfer/index";
 import { AppWrapper } from "./style";
 import "./style.css";
 import axios from "axios";
+
+import { removeTreeNode } from "./packages/Transfer/utils/index";
 const App: FC = (): ReactElement => {
   useEffect(() => {
     document.onselectstart = () => false;
@@ -21,6 +23,144 @@ const App: FC = (): ReactElement => {
   //     setImgList(data.data.data);
   //   })
   // },[])
+  const source=[
+    {
+      parentId:-1,
+      id: 1001,
+      name:"JavaScript"
+    },
+    {
+      id: 1002,
+      name: "swift",
+      children: [
+        {
+          parentId:1002,
+          id: 10021,
+          name: "ui",
+        },
+        {
+          id: 10022,
+          parentId:1002,
+          name: "lina",
+          children: [
+            {
+              parentId:10022,
+              id: 100221,
+              name:"gblina",
+            },
+            {
+              parentId:10022,
+              id: 100222,
+              name:"郭斌李娜",
+            }
+          ]
+        },
+        {
+          parentId:1002,
+          id: 10023,
+          name: "gb",
+        }
+      ]
+    },
+    {
+      id: 1003,
+      name:"kotlin"
+    },
+    {
+      id: 1004,
+      name:"pyhon"
+    },
+    {
+      id: 1005,
+      name: "go",
+      children: [
+        {
+          id: 10051,
+          parentId: 1005,
+          name: "云原生",
+        },
+        {
+          id: 10052,
+          parentId: 1005,
+          name: "大数据",
+        },
+        {
+          id: 10053,
+          parentId: 1005,
+          name: "人工智能",
+        },
+        {
+          id: 10054,
+          parentId: 1005,
+          name: "移动互联网",
+          children: [
+            {
+              id: 100541,
+              parentId: 10054,
+              name: "flutter",
+            },
+            {
+              id: 100542,
+              parentId: 10054,
+              name: "rn",
+            },
+            {
+              id: 100543,
+              parentId: 10054,
+              name: "uniapp",
+              children: [
+                {
+                  id: 1005431,
+                  parentId: 100543,
+                  name: "hbuilder",
+              
+                },
+                {
+                  id: 1005432,
+                  parentId: 100543,
+                  name: "vscode",
+                  children: [
+                    {
+                      id: 10054321,
+                      parentId: 1005432,
+                      name: "elsint",
+                     
+                    },
+                    {
+                      id: 10054322,
+                      parentId: 1005432,
+                      name: "prettier",
+                     
+                    },
+                    {
+                      id: 10054323,
+                      parentId: 1005432,
+                      name: "abyin",
+                      
+                    },
+                  ]
+                }
+              ]
+            },
+          ]
+        },
+        {
+          id: 10055,
+          parentId: 1005,
+          name: "app",
+        }
+      ]
+    },
+    {
+      id: 1006,
+      name:"c++"
+    },
+    {
+      id: 1007,
+      name:"c"
+    },
+  ];
+
   return (
     <AppWrapper>
       {/* <Button type={'wanring'} text="点击" /> */}
@@ -42,141 +182,7 @@ const App: FC = (): ReactElement => {
         </ul>
       </div> */}
       <Transfer
-        source={
-          [
-            {
-              parentId:-1,
-              id: 1001,
-              name:"JavaScript"
-            },
-            {
-              id: 1002,
-              name: "swift",
-              children: [
-                {
-                  parentId:1002,
-                  id: 10021,
-                  name: "ui",
-                },
-                {
-                  id: 10022,
-                  parentId:1002,
-                  name: "lina",
-                  children: [
-                    {
-                      parentId:10022,
-                      id: 100221,
-                      name:"gblina",
-                    },
-                    {
-                      parentId:10022,
-                      id: 100222,
-                      name:"郭斌李娜",
-                    }
-                  ]
-                },
-                {
-                  parentId:1002,
-                  id: 10023,
-                  name: "gb",
-                }
-              ]
-            },
-            {
-              id: 1003,
-              name:"kotlin"
-            },
-            {
-              id: 1004,
-              name:"pyhon"
-            },
-            {
-              id: 1005,
-              name: "go",
-              children: [
-                {
-                  id: 10051,
-                  parentId: 1005,
-                  name: "云原生",
-                },
-                {
-                  id: 10052,
-                  parentId: 1005,
-                  name: "大数据",
-                },
-                {
-                  id: 10053,
-                  parentId: 1005,
-                  name: "人工智能",
-                },
-                {
-                  id: 10054,
-                  parentId: 1005,
-                  name: "移动互联网",
-                  children: [
-                    {
-                      id: 100541,
-                      parentId: 10054,
-                      name: "flutter",
-                    },
-                    {
-                      id: 100542,
-                      parentId: 10054,
-                      name: "rn",
-                    },
-                    {
-                      id: 100543,
-                      parentId: 10054,
-                      name: "uniapp",
-                      children: [
-                        {
-                          id: 1005431,
-                          parentId: 100543,
-                          name: "hbuilder",
-                        },
-                        {
-                          id: 1005432,
-                          parentId: 100543,
-                          name: "vscode",
-                          children: [
-                            {
-                              id: 10054321,
-                              parentId: 1005432,
-                              name: "elsint",
-                            },
-                            {
-                              id: 10054322,
-                              parentId: 1005432,
-                              name: "prettier",
-                            },
-                            {
-                              id: 10054323,
-                              parentId: 1005432,
-                              name: "abyin",
-                            },
-                          ]
-                        }
-                      ]
-                    },
-                  ]
-                },
-                {
-                  id: 10055,
-                  parentId: 1005,
-                  name: "app",
-                }
-              ]
-            },
-            {
-              id: 1006,
-              name:"c++"
-            },
-            {
-              id: 1007,
-              name:"c"
-            },
-          ]
-        }
+        source={source}
         target={
          []
         } />

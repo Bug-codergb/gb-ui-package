@@ -19,7 +19,7 @@ import {
   RightContainer
 } from "./style";
 
-import {generateTree, mergeTree } from "./utils/index"
+import {generateTree, mergeTree,removeTreeNode } from "./utils/index"
 
 interface IProps{
   source: any[],
@@ -29,13 +29,13 @@ const Transfer: FC<IProps> = (props):ReactElement => {
   const { source:sourceProp,target:targetProp } = props;
 
   const [source, setSource] = useState(deepClone(sourceProp));
+
   const [sourceSelect, setSourceSelect] = useState<any[]>([]);
   const [targetSelect, setTargetSelect] = useState<any[]>([]);
 
   const [target, setTarget] = useState<any[]>([]);
   useLayoutEffect(() => {
     if (target.length !== 0) {
-      
       let arr = [...source];
       deleteChildren(arr, target, "id");
       setSource(arr);
@@ -52,7 +52,9 @@ const Transfer: FC<IProps> = (props):ReactElement => {
       preLink = cloneLink; 
     }
     console.log(preLink)
-    if(preLink)setSourceSelect(preLink);
+    if (preLink) {
+      setSourceSelect(preLink);
+    }
     /*if (!isSelect) {
       const arr = alias === 'left' ? [...sourceSelect] : [...targetSelect];
       deleteFromArr(arr,undefined,{key:'id',value:item.id});
@@ -66,10 +68,13 @@ const Transfer: FC<IProps> = (props):ReactElement => {
 
   
   const rightClickHandler = () => {
-    console.log(sourceSelect)
     if (sourceSelect.length === 0) {
       
     } else { 
+      let sourceArr = [...source];
+      removeTreeNode(sourceArr);
+      console.log(sourceArr);
+      setSource(sourceArr);
       // const temp = [...target];
       // for (let item of sourceSelect) {
       //   temp.push(item);
@@ -86,6 +91,7 @@ const Transfer: FC<IProps> = (props):ReactElement => {
     }
   }
   const leftClickHandler = () => {
+    
     if (targetSelect.length === 0) {
       
     } else {
