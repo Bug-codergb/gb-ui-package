@@ -21,7 +21,15 @@ interface IInput{
 interface IProps{
   keyProp: string;
   data: any[],
-  changeNode:(parentNode:any,parentStatus:boolean,isAllEmpty:boolean,item:any,status:boolean,link:any)=>void
+  changeNode: (
+    parentNode: any,
+    parentStatus: boolean,
+    isAllEmpty: boolean,
+    item: any,
+    status: boolean,
+    link: any,
+    selectAll: boolean
+  ) => void
 }
 const LoopTree: FC<IProps> = (props) => {
   const { data : dataProp=[],changeNode} = props;
@@ -30,7 +38,7 @@ const LoopTree: FC<IProps> = (props) => {
   useEffect(() => {
     if (dataProp) {
       let dataArr = [...dataProp];
-      console.log(dataArr)
+      //console.log(dataArr)
       levelTree(
         dataArr,
         {
@@ -61,7 +69,6 @@ const LoopTree: FC<IProps> = (props) => {
    
   //最底层子组件处理
   const selectChangeHandler = (e: boolean, item: any, index: number,type:'auto'|'handle',link:any) => {
-
     if(type==='handle') selectChildren(item.children, e);
     
     item.el = item.inputRef.current.inputRef;
@@ -76,10 +83,10 @@ const LoopTree: FC<IProps> = (props) => {
     setTree(arr);
   
     const _parent = item.parentNode ?? {};
-    let parentStatus = false,isAllEmpty = true;
+    let parentStatus = false,isAllEmpty = true,selectAll = false;
     if (_parent && Object.keys(_parent).length !== 0) {
       const children = item.parentNode.children || [];
-      const selectAll = children.every((item) => {
+      selectAll = children.every((item) => {
         return item.isSelect !== undefined && item.isSelect === true;
       })
       //console.log(selectAll,children);
@@ -92,12 +99,36 @@ const LoopTree: FC<IProps> = (props) => {
         return item.isSelect == undefined || item.isSelect === false;
       })
     }
-    changeNode(item.parentNode,parentStatus,isAllEmpty,item,e,link);//发送给父组件
+    console.log(e);
+    changeNode(item.parentNode,parentStatus,isAllEmpty,item,e,link,selectAll);//发送给父组件
   }
 
+  const setChildrenToNext = (link: any) => {
+    if (link && link.children) { 
+      const selectAll = link.children.every((item: any) => item.isSelect === true);
+      if (selectAll) {
+        link.next = link.children;
+        for (let item of link.children) {
+          setChildrenToNext(item);
+        }
+      }
+      
+    }
+  }
   //父组件处理
-  const changeNodeHandler = (item: any, status: boolean, allEmpty: boolean, index: number, link: any) => {
-    item && (item.next = link);
+  const changeNodeHandler = (
+    item: any,
+    status: boolean,
+    allEmpty: boolean,
+    index: number,
+    link: any,
+    selectAll: boolean
+  ) => {
+   
+    if (item) {
+      item.next = link;
+      setChildrenToNext(link);
+    }
     item.isSelect = status;
     //console.log(item);
     if ((!status && !allEmpty) || item.children.some((child)=>child.indeterminate === true)) {
@@ -138,7 +169,15 @@ const LoopTree: FC<IProps> = (props) => {
                       keyProp={item.id}
                       key={item.id}
                       changeNode={
-                        (row, parentStatus, allEmpty, item, status, link) => changeNodeHandler(row, parentStatus, allEmpty, index,link)
+                        (
+                          row,
+                          parentStatus,
+                          allEmpty,
+                          item,
+                          status,
+                          link,
+                          selectAll
+                        ) => changeNodeHandler(row, parentStatus, allEmpty, index, link,selectAll)
                       } />
                 </div>
               }

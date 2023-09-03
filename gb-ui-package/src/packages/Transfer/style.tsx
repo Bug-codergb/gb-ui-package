@@ -1,7 +1,7 @@
 import styled  from "styled-components";
 export const TransferWrapper = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   height: 100%;
   .controller{
@@ -11,7 +11,22 @@ export const TransferWrapper = styled.div`
     margin:  0 ${30 / 40}rem;
     .right,.left{
       cursor  :pointer ;
-      
+      background-color:skyblue ;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 20px;
+      color: #fff;
+      line-height: 50px;
+    }
+    .left{
+      margin: 5px 0 0 0;
+    }
+    .right{
+      margin: 0 0 5px 0;
     }
   }
 `

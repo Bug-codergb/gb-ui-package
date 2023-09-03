@@ -37,7 +37,7 @@ const Tree: FC<IProps> = (props) :ReactElement=> {
     status: boolean,
     link:any
   ) => {
-    //console.log(parentNode, item);
+    console.log(status);
     selectChangleProp(parentNode, parentStatus, isAllEmpty, item, status,link);
   }
   return (

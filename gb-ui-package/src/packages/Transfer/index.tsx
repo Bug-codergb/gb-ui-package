@@ -43,15 +43,15 @@ const Transfer: FC<IProps> = (props):ReactElement => {
   }, [])
   
   let preLink:any = null;
-  const selectItemChangeHandler = (isSelect: boolean, item: any, alias: string,link:any) => {
-    //console.log(link, isSelect);
+  const selectItemChangeHandler = (isSelect: boolean, item: any, alias: string, link: any) => {
+    console.log(link)
     const cloneLink = generateTree(link);
+    console.log(cloneLink);
     if (preLink) {
       mergeTree(preLink,cloneLink);
     } else {
       preLink = cloneLink; 
     }
-    console.log(preLink)
     if (preLink) {
       setSourceSelect(preLink);
     }
@@ -141,8 +141,8 @@ const Transfer: FC<IProps> = (props):ReactElement => {
         selectChangle={selectLeftChangleHandler} />
     </LeftContainer>
     <div className="controller">
-      <div className="right" onClick={()=>rightClickHandler()}>向右</div>
-      <div className="left" onClick={()=>leftClickHandler()}>向左</div>
+      <div className="right" onClick={()=>rightClickHandler()}>&gt;</div>
+      <div className="left" onClick={()=>leftClickHandler()}>&lt;</div>
     </div>
     <RightContainer>
       <Tree
