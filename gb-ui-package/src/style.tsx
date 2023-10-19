@@ -1,6 +1,7 @@
 import styled from "styled-components";
 export const AppWrapper = styled.div`
-  height: 100%;
+  height: 600px;
+  width: 600px;
   .container{
     height: 800px;
     .img-container{

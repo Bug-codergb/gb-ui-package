@@ -1,7 +1,10 @@
-type IType = "danger" | "primary" | "wanring" | "default";
+type IType = "danger" | "primary" | "wanring" | "default" |"info";
 interface IProps{
-  type: IType,
-  text?:number|string|boolean
+  type?: IType,
+  round?:boolean,
+  text?: number | string | boolean,
+  disabled?:boolean,
+  onClick?:()=>void
 }
 export type {
   IProps,

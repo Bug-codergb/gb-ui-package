@@ -6,7 +6,7 @@ import React, {
 //import Image from "./packages/Image/index";
 
 import Transfer from "./packages/Transfer/index";
-
+import Text from "./packages/Text";
 import { AppWrapper } from "./style";
 import "./style.css";
 import axios from "axios";
@@ -163,7 +163,8 @@ const App: FC = (): ReactElement => {
 
   return (
     <AppWrapper>
-      {/* <Button type={'wanring'} text="点击" /> */}
+      <Text maxLine={2} text="滕王阁序》是唐代文学家王勃创作的一篇骈文。文章由洪都的地势、人才写到宴会，写滕王阁的壮丽，眺望的广远，扣紧秋日，景色鲜明；再从宴会娱游写到人生遇合，抒发身世之感；接着写作者的遭遇并表白要自励志节，最后以应命赋诗和自谦之辞作结"/>
+       {/* <Button type={'danger'} text="点击我好吗" onClick={()=>console.log("jing")}/> */}
       {/* <Calendar/> */}
       
       {/* <div className="container">
@@ -181,11 +182,11 @@ const App: FC = (): ReactElement => {
           }
         </ul>
       </div> */}
-      <Transfer
+      {/* <Transfer
         source={source}
         target={
          []
-        } />
+        } /> */}
     </AppWrapper>
   )
 }
