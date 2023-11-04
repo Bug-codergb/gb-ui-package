@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 module.exports = {
   entry: {
     main: {
@@ -7,9 +8,13 @@ module.exports = {
     }
   },
   output: {
-    filename: "bundle.js",
+    filename: "[contenthash].bundle.js",
     path: path.resolve(__dirname, "build"),
-    clean:true
+    clean: true,
+    library: {
+      name: "gb_ui_package",
+      type:"var"
+    }
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx', '.json']
@@ -57,10 +62,22 @@ module.exports = {
       }
     ]
   },
+  optimization: {
+    minimizer: [
+      new CssMinimizerPlugin({
+        test:/\.css$/i
+      })
+    ],
+    minimize: true,
+    splitChunks: {
+      chunks:"all"
+    }
+  },
   plugins: [
     new HtmlWebpackPlugin({
       template:path.resolve(__dirname,"public/index.html")
-    })
+    }),
+    new CssMinimizerPlugin()
   ]
 }
 //
