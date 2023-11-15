@@ -8,7 +8,7 @@ module.exports = {
     }
   },
   output: {
-    filename: "[contenthash].bundle.js",
+    filename: "js/[contenthash].bundle.js",
     path: path.resolve(__dirname, "build"),
     clean: true,
     library: {
@@ -64,7 +64,7 @@ module.exports = {
         test: /\.(png|gif|jpe?g|svg)$/,
         type: 'asset/resource',
         generator: {
-          filename: 'static/img/[hash][ext]',
+          filename: 'img/[hash][ext]',
         },
       }
     ]
