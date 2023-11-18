@@ -4,10 +4,17 @@ import React, {
   useRef,
   useEffect,
   Ref,
+  useState,
 } from "react";
 
 import { GraphWrapper } from "./style";
-import { createElement ,appendChild,enterToMove} from "../../../../utils/dom";
+import {
+  createElement,
+  appendChild,
+  enterToMove,
+  mergeCol,
+   mergeRow
+} from "../../../../utils/dom";
 
 interface IShap<T> {
   id: string;
@@ -16,6 +23,8 @@ interface IShap<T> {
 
 const Graph: FC = () => {
   const graphRef = useRef<HTMLDivElement | null>(null);
+  const [seleect, setSelect] = useState<any>([]);
+  const [allTd, setAllTd] = useState<any>();
 
   const mousedownHandler = (e: MouseEvent) => {
     const target = e.currentTarget as HTMLDivElement;
@@ -31,11 +40,27 @@ const Graph: FC = () => {
         position: "absolute",
         left: `${left}px`,
         top: `${top}px`,
-        backgroundColor:"#fff"
+        backgroundColor: "#fff",
+        cursor:"move",
       }
     });
     div.addEventListener("mousedown", function (e) {
-      e.stopPropagation()
+      e.stopPropagation();
+      const target = e.currentTarget as HTMLDivElement;
+      const x = e.clientX - (target?target.offsetLeft : 0);
+      const y = e.clientY - (target ? target.offsetTop : 0);
+      function handler(e:MouseEvent) {
+        
+          let left = e.clientX - x;
+          let top = e.clientY - y;
+          div.style.left = `${left}px`;
+          div.style.top = `${top}px`;
+
+      }
+      div.addEventListener("mousemove", handler);
+      document.addEventListener("mouseup", () => {
+        div.removeEventListener("mousemove", handler);
+      })
     })
 
     function handler(e: MouseEvent) {
@@ -127,7 +152,6 @@ const Graph: FC = () => {
             parent.offsetLeft + parent.offsetWidth+ containerOffsetLeft,
             parent.offsetTop + containerOffsetTop
           ];
-          console.log(rightBottom)
           enterToMove(div,rightBottom,parent,containerOffsetLeft,containerOffsetTop);break
         case 6:
           div.style.left = "100%";
@@ -158,9 +182,7 @@ const Graph: FC = () => {
   }
   useEffect(() => {
     if (graphRef.current) {
-      graphRef.current.addEventListener("mousedown", mousedownHandler, false);
-
-     
+      //graphRef.current.addEventListener("mousedown", mousedownHandler, false);
     }
   }, [graphRef]);
   useEffect(() => {
@@ -170,9 +192,148 @@ const Graph: FC = () => {
       }
     };
   }, []);
+  const constructor = [
+    {
+      label: "前端语言",
+      prop:"font"
+    },
+    {
+      label: "后段语言",
+      prop:"end"
+    },
+    {
+      label: "大数据语言",
+      prop:"data"
+    },
+    {
+      label: "嵌入式",
+      prop:"a"
+    }
+  ]
+  useEffect(() => {
+    const tdlist = document.querySelectorAll("td");
+
+    setAllTd(tdlist);
+
+    tdlist.forEach((td, index) => {
+      function tdMouseDown(e) {
+        let self = this;
+        function handler(e) {
+          self.style.backgroundColor = "pink";
+
+          for (let item of tdlist) {
+            function handler(e:MouseEvent) {
+              this.style.backgroundColor = "pink";
+            }
+            if (item !== tdlist[index]) {
+              item.addEventListener("mouseenter", handler);
+            }
+            document.addEventListener("mouseup", function (e) {
+              item.removeEventListener("mouseenter", handler);
+            })
+          }
+        }
+        document.addEventListener("mousemove", handler);
+        document.addEventListener("mouseup", () => {
+          document.removeEventListener("mousemove",handler)
+        })
+      }
+      td.addEventListener("mousedown", tdMouseDown);
+      
+    })
+  }, [])
+  const mergeHandler = () => {
+    const select:any[] = [];
+    for (let item of allTd) {
+      if (item.style.backgroundColor === 'pink') {
+        select.push(item);
+      }
+    }
+    console.log(select)
+    if (select.length !== 0) {
+      const row: any[][] = [];
+      for (let i = 0; i < select.length; i++) {
+        const item = select[i];
+        if (item.style.backgroundColor === "pink") {
+          
+          mergeRow(item)
+          setTimeout(() => {
+            mergeCol(item);
+
+            for (let item of select) {
+              item.style.backgroundColor = "white";
+            } 
+          },0)
+        } else {
+          
+        }
+      }
+      
+    }
+  }
   return (
     <GraphWrapper>
-      <div className="graph-container" ref={graphRef}></div>
+      <div className="graph-container" ref={graphRef}>
+        <table border="true">
+          
+          <tr>
+            <td data-p={[0,0]}>前端语言</td>
+            <td data-p={[0,1]}>后端语言</td>
+            <td data-p={[0,2]}>大数据语言</td>
+            <td data-p={[0,4]}>嵌入式</td>
+            <td data-p={[0,4]}>移动端</td>
+            <td data-p={[0,4]}>pc端</td>
+            <td data-p={[0,4]}>云原生</td>
+            </tr>
+          <tr>
+            <td data-p={[1,0]}>JavaScript</td>
+            <td data-p={[1,1]}>Java</td>
+            <td data-p={[1,2]}>pyhon</td>
+            <td data-p={[1,3]}>C++</td>
+            <td data-p={[1,3]}>React</td>
+            <td data-p={[1,3]}>Vue</td>
+            <td data-p={[1,3]}>Uniapp</td>
+            </tr>
+            <tr>
+            <td data-p={[2,0]}>Flutter</td>
+            <td data-p={[2,1]}>Golang</td>
+            <td data-p={[2,2]}>ruby</td>
+            <td data-p={[2,3]}>C</td>
+            <td data-p={[2,3]}>Spring</td>
+            <td data-p={[2,3]}>SpringBoot</td>
+            <td data-p={[2,3]}>Anglur</td>
+            </tr>
+            <tr>
+            <td data-p={[3,0]}>rust</td>
+            <td data-p={[3,1]}>php</td>
+            <td data-p={[3,2]}>swift</td>
+            <td data-p={[3,3]}>oc</td>
+            <td data-p={[3,3]}>React Native</td>
+            <td data-p={[3,3]}>Express</td>
+            <td data-p={[3,3]}>Koa</td>
+          </tr>
+          <tr>
+            <td data-p={[3,0]}>Strutc</td>
+            <td data-p={[3,1]}>MySQL</td>
+            <td data-p={[3,2]}>SqlServer</td>
+            <td data-p={[3,3]}>Oracle</td>
+            <td data-p={[3,3]}>Redis</td>
+            <td data-p={[3,3]}>Linux</td>
+            <td data-p={[3,3]}>Ngnix</td>
+          </tr>
+          
+          <tr>
+            <td data-p={[3,0]}>Tomcat</td>
+            <td data-p={[3,1]}>Maven</td>
+            <td data-p={[3,2]}>Npm</td>
+            <td data-p={[3,3]}>NodeJS</td>
+            <td data-p={[3,3]}>Scala</td>
+            <td data-p={[3,3]}>Kotlin</td>
+            <td data-p={[3,3]}>TypeScript</td>
+           </tr>
+        </table>
+        <button onClick={()=>mergeHandler()}>合并单元格</button>
+      </div>
     </GraphWrapper>
   );
 };
