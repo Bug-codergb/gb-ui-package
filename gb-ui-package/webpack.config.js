@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 module.exports = {
@@ -84,7 +85,10 @@ module.exports = {
     new HtmlWebpackPlugin({
       template:path.resolve(__dirname,"public/index.html")
     }),
-    new CssMinimizerPlugin()
+    new CssMinimizerPlugin(),
+    new webpack.DefinePlugin({
+      NAME:'gb-ui-package' ,
+    })
   ]
 }
 //
