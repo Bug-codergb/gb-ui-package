@@ -69,53 +69,68 @@ export function enterToMove(
   );
 }
 
-export function mergeCol(item:HTMLElement) {
+export function mergeCol(item: HTMLElement) {
   let span = 0;
   if (item.parentNode) {
-    let cur = item.parentNode.nextSibling;
+    let rawSpan = item.getAttribute("rowspan") ?? 1;
+    let cur = item.parentNode.nextSibling; //找到当前节点的父节点的下一个节点
 
     const children = item.parentNode.childNodes;
-    console.log(children);
     const currentIndex = [...children].findIndex((row) => {
       return row === item;
     });
+    
+    let additional = Number(rawSpan);
     while (
       cur &&
       cur.childNodes[currentIndex] &&
-      (cur.childNodes[currentIndex].nodeType === 8 ||
-        cur.childNodes[currentIndex].style.backgroundColor === "pink")
+      ((cur.childNodes[currentIndex].nodeType === 8 && rawSpan > 1) ||
+        (cur.childNodes[currentIndex].nodeType !== 8 &&
+          cur.childNodes[currentIndex].style.backgroundColor === "pink"))
     ) {
-      span++;
+      rawSpan--;
+      //span++;
+      if (
+        cur.childNodes[currentIndex].nodeType !== 8 &&
+        cur.childNodes[currentIndex].style.backgroundColor === "pink") {
+        additional += Number(cur.childNodes[currentIndex].getAttribute("rowspan") ?? 1);  
+        rawSpan = Number(cur.childNodes[currentIndex].getAttribute("rowspan") ?? 1);
+      }
       let next = cur.nextSibling;
       const currentItem = cur.childNodes[currentIndex];
-      console.log(currentItem);
+
       const parent = currentItem.parentNode;
 
       const comment = document.createComment("delete");
 
-      if(parent) parent.insertBefore(comment, currentItem);
-      if(parent) parent.removeChild(currentItem);
+      if (parent) parent.insertBefore(comment, currentItem);
+      if (parent) parent.removeChild(currentItem);
       cur = next;
     }
-    item.setAttribute("rowspan", `${span + 1}`);
+    console.log(additional)
+    item.setAttribute("rowspan", `${Number(additional)}`);//这里判断是否加一
   }
 }
 export function mergeRow(item: HTMLElement) {
   let span = 0;
-  let rawSpan = item.getAttribute("colspan") ?? 0;
-  if (`${rawSpan}` === `1`) {
-    item.setAttribute('colspan', '0');
-  }
   let cur = item.nextSibling;
-  while (cur && cur.style.backgroundColor === "pink") {
+
+  let rawSpan = item.getAttribute("colspan") ?? "0";
+  while (
+    cur &&
+    ((cur.nodeType === 8 && rawSpan > 1) ||
+      (cur.nodeType !== 8 && cur.style.backgroundColor === "pink"))
+  ) {
+    rawSpan--;
     span++;
     let nextSibling = cur.nextSibling;
     const parent = cur.parentNode;
 
     const comment = document.createComment("delete");
     if (parent) parent.insertBefore(comment, cur);
-    if(parent) parent.removeChild(cur);
+    if (parent) parent.removeChild(cur);
     cur = nextSibling;
   }
-  item.setAttribute("colspan",`${span + 1 + (rawSpan !== 0 ? rawSpan - 1 : 0)}`);
+  console.log(span);
+  item.setAttribute("colspan", `${span + 1}`);
 }

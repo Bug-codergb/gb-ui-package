@@ -192,24 +192,6 @@ const Graph: FC = () => {
       }
     };
   }, []);
-  const constructor = [
-    {
-      label: "前端语言",
-      prop:"font"
-    },
-    {
-      label: "后段语言",
-      prop:"end"
-    },
-    {
-      label: "大数据语言",
-      prop:"data"
-    },
-    {
-      label: "嵌入式",
-      prop:"a"
-    }
-  ]
   useEffect(() => {
     const tdlist = document.querySelectorAll("td");
 
@@ -249,7 +231,7 @@ const Graph: FC = () => {
         select.push(item);
       }
     }
-    console.log(select)
+    
     if (select.length !== 0) {
       const row: any[][] = [];
       for (let i = 0; i < select.length; i++) {
@@ -259,7 +241,6 @@ const Graph: FC = () => {
           mergeRow(item)
           setTimeout(() => {
             mergeCol(item);
-
             for (let item of select) {
               item.style.backgroundColor = "white";
             } 
