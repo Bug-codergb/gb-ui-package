@@ -70,7 +70,6 @@ export function enterToMove(
 }
 
 export function mergeCol(item: HTMLElement) {
-  let span = 0;
   if (item.parentNode) {
     let rawSpan = item.getAttribute("rowspan") ?? 1;
     let cur = item.parentNode.nextSibling; //找到当前节点的父节点的下一个节点
@@ -107,7 +106,6 @@ export function mergeCol(item: HTMLElement) {
       if (parent) parent.removeChild(currentItem);
       cur = next;
     }
-    console.log(additional)
     item.setAttribute("rowspan", `${Number(additional)}`);//这里判断是否加一
   }
 }
@@ -115,14 +113,20 @@ export function mergeRow(item: HTMLElement) {
   let span = 0;
   let cur = item.nextSibling;
 
-  let rawSpan = item.getAttribute("colspan") ?? "0";
+  let rawSpan = item.getAttribute("colspan") ?? "1";
+
+  let additional = Number(rawSpan);
   while (
     cur &&
     ((cur.nodeType === 8 && rawSpan > 1) ||
       (cur.nodeType !== 8 && cur.style.backgroundColor === "pink"))
   ) {
     rawSpan--;
-    span++;
+    if (cur.nodeType !== 8 && cur.style.backgroundColor === 'pink') {
+      additional += Number(cur.getAttribute("colspan") ?? 1);
+      rawSpan = Number(cur.getAttribute("colspan") ?? 1);
+
+    }
     let nextSibling = cur.nextSibling;
     const parent = cur.parentNode;
 
@@ -132,5 +136,5 @@ export function mergeRow(item: HTMLElement) {
     cur = nextSibling;
   }
   console.log(span);
-  item.setAttribute("colspan", `${span + 1}`);
+  item.setAttribute("colspan", `${Number(additional)}`);
 }

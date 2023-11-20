@@ -194,34 +194,47 @@ const Graph: FC = () => {
   }, []);
   useEffect(() => {
     const tdlist = document.querySelectorAll("td");
-
     setAllTd(tdlist);
 
     tdlist.forEach((td, index) => {
-      function tdMouseDown(e) {
+      //鼠标按下回调函数
+      function tdMouseDownHandler(e: MouseEvent) {
+        e.stopPropagation();
         let self = this;
-        function handler(e) {
-          self.style.backgroundColor = "pink";
+        // 当鼠标按下并且移动时
+        function tdMouseMoveHandler(e:MouseEvent) {
+          e.stopPropagation();
+          self.style.backgroundColor = "pink";//当前元素置为选中色
 
           for (let item of tdlist) {
             function handler(e:MouseEvent) {
               this.style.backgroundColor = "pink";
             }
             if (item !== tdlist[index]) {
-              item.addEventListener("mouseenter", handler);
+              item.addEventListener("mouseover", handler);
             }
             document.addEventListener("mouseup", function (e) {
-              item.removeEventListener("mouseenter", handler);
+              item.removeEventListener("mouseover", handler);
             })
           }
+
         }
-        document.addEventListener("mousemove", handler);
+        document.addEventListener("mousemove", tdMouseMoveHandler);
+
         document.addEventListener("mouseup", () => {
-          document.removeEventListener("mousemove",handler)
+          document.removeEventListener("mousemove",tdMouseMoveHandler)
         })
       }
-      td.addEventListener("mousedown", tdMouseDown);
-      
+      //鼠标按下时
+      td.addEventListener("mousedown", tdMouseDownHandler);
+
+      //当鼠标点击时，颜色职位透明
+      td.addEventListener("click", function (e) {
+        e.stopPropagation();
+        for (let item of tdlist) {
+          item.style.backgroundColor = "white"
+        }
+      })
     })
   }, [])
   const mergeHandler = () => {
@@ -231,32 +244,28 @@ const Graph: FC = () => {
         select.push(item);
       }
     }
-    
     if (select.length !== 0) {
-      const row: any[][] = [];
       for (let i = 0; i < select.length; i++) {
         const item = select[i];
         if (item.style.backgroundColor === "pink") {
           
           mergeRow(item)
-          setTimeout(() => {
+          queueMicrotask(() => {
             mergeCol(item);
             for (let item of select) {
               item.style.backgroundColor = "white";
             } 
-          },0)
+          })
         } else {
           
         }
       }
-      
     }
   }
   return (
     <GraphWrapper>
       <div className="graph-container" ref={graphRef}>
         <table border="true">
-          
           <tr>
             <td data-p={[0,0]}>前端语言</td>
             <td data-p={[0,1]}>后端语言</td>
@@ -311,6 +320,15 @@ const Graph: FC = () => {
             <td data-p={[3,3]}>Scala</td>
             <td data-p={[3,3]}>Kotlin</td>
             <td data-p={[3,3]}>TypeScript</td>
+          </tr>
+          <tr>
+            <td data-p={[3,0]}>Next</td>
+            <td data-p={[3,1]}>Android</td>
+            <td data-p={[3,2]}>IOS</td>
+            <td data-p={[3,3]}>Macos</td>
+            <td data-p={[3,3]}>Dart</td>
+            <td data-p={[3,3]}>Babel</td>
+            <td data-p={[3,3]}>Eslint</td>
            </tr>
         </table>
         <button onClick={()=>mergeHandler()}>合并单元格</button>
