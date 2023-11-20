@@ -138,3 +138,36 @@ export function mergeRow(item: HTMLElement) {
   console.log(span);
   item.setAttribute("colspan", `${Number(additional)}`);
 }
+export function getPrevTd(td:HTMLElement) {
+  let ret: HTMLElement | null = null;
+  const parent = td.parentNode;
+  const childNodes = parent?parent!.childNodes:[];
+  const index:number = [...childNodes].findIndex((item: HTMLElement,index:number) => {
+    return item === td;
+  })
+  if (index !== -1) {
+    const prev = parent ? parent!.previousSibling : null;
+    if (prev) {
+      return prev.childNodes[index];
+    }
+  }
+  return ret;
+}
+export function getNextTd(td: HTMLElement) {
+  if (!td) {
+    return null;
+  }
+  let ret: HTMLElement | null = null;
+  const parent = td.parentNode;
+  const childNodes = parent?parent!.childNodes:[];
+  const index:number = [...childNodes].findIndex((item: HTMLElement,index:number) => {
+    return item === td;
+  })
+  if (index !== -1) {
+    const prev = parent ? parent!.nextSibling : null;
+    if (prev) {
+      ret = prev.childNodes[index];
+    }
+  }
+  return ret;
+}

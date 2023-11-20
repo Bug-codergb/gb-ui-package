@@ -13,7 +13,10 @@ import {
   appendChild,
   enterToMove,
   mergeCol,
-   mergeRow
+  mergeRow,
+  getNextTd,
+  getPrevTd
+
 } from "../../../../utils/dom";
 
 interface IShap<T> {
@@ -198,23 +201,68 @@ const Graph: FC = () => {
 
     tdlist.forEach((td, index) => {
       //鼠标按下回调函数
-      function tdMouseDownHandler(e: MouseEvent) {
+      function tdMouseDownHandler(e: MouseEvent) { //(按下)
         e.stopPropagation();
         let self = this;
+        let currentClickNext = self;
+        let currentClickPrev = self;
         // 当鼠标按下并且移动时
-        function tdMouseMoveHandler(e:MouseEvent) {
+        function tdMouseMoveHandler(e:MouseEvent) { //(移动)
           e.stopPropagation();
           self.style.backgroundColor = "pink";//当前元素置为选中色
-
+          
+          
           for (let item of tdlist) {
-            function handler(e:MouseEvent) {
+
+            function handler(e: MouseEvent) {  
+              console.log("enter 执行")
               this.style.backgroundColor = "pink";
+
+              const prev = getPrevTd(this);
+              const next = getNextTd(this);
+              if (
+                prev &&
+                prev.nodeType !== 8 &&
+                prev.style.backgroundColor === "pink" &&
+                ((next &&
+                next.style.backgroundColor !== 'pink') || !next) &&
+                this.previousSibling &&
+                this.previousSibling.style.backgroundColor !=='pink'
+              ) {//向下走
+                let currentOverNext = this;
+                currentClickNext = getNextTd(currentClickNext);
+                while (currentOverNext && currentOverNext !==currentClickNext) {
+                  currentOverNext.style.backgroundColor = "pink";
+                  currentOverNext = currentOverNext.previousSibling;
+                }
+                currentClickNext.style.backgroundColor = "pink";
+              }
+              
+              if (
+                next &&
+                next.nodeType !== 9 &&
+                next.style.backgroundColor === "pink" &&
+                ((prev &&
+                prev.style.backgroundColor !== "pink") || !prev) && 
+                this.previousSibling &&
+                this.previousSibling.style.backgroundColor !=='pink'
+              ) {//向上走
+                let currentOverNext = this;
+                currentClickPrev  = getPrevTd(currentClickPrev);
+
+                while (currentOverNext && currentOverNext !== currentClickPrev) {
+                  currentOverNext.style.backgroundColor = "pink";
+                  currentOverNext = currentOverNext.previousSibling;
+                }
+                currentClickPrev.style.backgroundColor = "pink";
+              }
+              
             }
-            if (item !== tdlist[index]) {
-              item.addEventListener("mouseover", handler);
+            if (item !== self) {
+              item.onmouseover = handler;//这里的绑定事件不使用addEventListener,否则会绑定很多次
             }
             document.addEventListener("mouseup", function (e) {
-              item.removeEventListener("mouseover", handler);
+              item.onmouseover=null;
             })
           }
 
@@ -236,6 +284,7 @@ const Graph: FC = () => {
         }
       })
     })
+
   }, [])
   const mergeHandler = () => {
     const select:any[] = [];
@@ -329,6 +378,15 @@ const Graph: FC = () => {
             <td data-p={[3,3]}>Dart</td>
             <td data-p={[3,3]}>Babel</td>
             <td data-p={[3,3]}>Eslint</td>
+          </tr>
+          <tr>
+            <td data-p={[3,0]}>Inter</td>
+            <td data-p={[3,1]}>AMD</td>
+            <td data-p={[3,2]}>Promise</td>
+            <td data-p={[3,3]}>Object</td>
+            <td data-p={[3,3]}>Array</td>
+            <td data-p={[3,3]}>Function</td>
+            <td data-p={[3,3]}>Generator</td>
            </tr>
         </table>
         <button onClick={()=>mergeHandler()}>合并单元格</button>
