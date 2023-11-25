@@ -18,7 +18,7 @@ import axios from "axios";
 import { removeTreeNode } from "./packages/Transfer/utils/index";
 const App: FC = (): ReactElement => {
   useEffect(() => {
-    document.onselectstart = () => false;
+    //document.onselectstart = () => false;
   }, []);
   
   const [imgList, setImgList] = useState<any[]>([]);

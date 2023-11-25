@@ -44,9 +44,33 @@ const Graph: FC = () => {
         left: `${left}px`,
         top: `${top}px`,
         backgroundColor: "#fff",
-        cursor:"move",
+        cursor: "move",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems:'center'
       }
     });
+    const span = createElement<HTMLDivElement>("span", {
+      style: {
+        display: 'inline-block',
+        width: '100%',
+        padding: '5px',
+        cursor: 'text',
+        outline:'none'
+      }
+    });
+    span.onmousedown = function (e) {
+      e.stopPropagation()
+    }
+    span.onmousemove = function (e) {
+      e.stopPropagation()
+    }
+    div.appendChild(span);
+    div.ondblclick = function (e) {
+      span.setAttribute("contenteditable", 'true');
+      span.focus()
+    }
+
     div.addEventListener("mousedown", function (e) {
       e.stopPropagation();
       const target = e.currentTarget as HTMLDivElement;
@@ -89,16 +113,14 @@ const Graph: FC = () => {
     document.addEventListener("mousemove", handler, false);
     document.addEventListener("mouseup", () => {
       document.removeEventListener("mousemove", handler);
-      const list = createPosBlock(div);
+      const list = createPosBlock(div);//创建拖拽角
       for (let item of list) {
         appendChild(div, item);
       }
     });
   };
   const createPosBlock = (parent: HTMLDivElement) => {
-    
     const list: HTMLDivElement[] = [];
-
     const containerOffsetLeft = graphRef.current ? graphRef.current!.offsetLeft : 0;
     const containerOffsetTop = graphRef.current ? graphRef.current!.offsetTop : 0;
 
@@ -185,7 +207,7 @@ const Graph: FC = () => {
   }
   useEffect(() => {
     if (graphRef.current) {
-      //graphRef.current.addEventListener("mousedown", mousedownHandler, false);
+      graphRef.current.addEventListener("mousedown", mousedownHandler, false);
     }
   }, [graphRef]);
   useEffect(() => {
@@ -196,7 +218,7 @@ const Graph: FC = () => {
     };
   }, []);
   useEffect(() => {
-    const tdlist = document.querySelectorAll("td");
+    /*const tdlist = document.querySelectorAll("td");
     setAllTd(tdlist);
 
     tdlist.forEach((td, index) => {
@@ -213,56 +235,17 @@ const Graph: FC = () => {
           
           
           for (let item of tdlist) {
-
-            function handler(e: MouseEvent) {  
-              console.log("enter 执行")
-              this.style.backgroundColor = "pink";
-
-              const prev = getPrevTd(this);
-              const next = getNextTd(this);
-              if (
-                prev &&
-                prev.nodeType !== 8 &&
-                prev.style.backgroundColor === "pink" &&
-                ((next &&
-                next.style.backgroundColor !== 'pink') || !next) &&
-                this.previousSibling &&
-                this.previousSibling.style.backgroundColor !=='pink'
-              ) {//向下走
-                let currentOverNext = this;
-                currentClickNext = getNextTd(currentClickNext);
-                while (currentOverNext && currentOverNext !==currentClickNext) {
-                  currentOverNext.style.backgroundColor = "pink";
-                  currentOverNext = currentOverNext.previousSibling;
-                }
-                currentClickNext.style.backgroundColor = "pink";
-              }
-              
-              if (
-                next &&
-                next.nodeType !== 9 &&
-                next.style.backgroundColor === "pink" &&
-                ((prev &&
-                prev.style.backgroundColor !== "pink") || !prev) && 
-                this.previousSibling &&
-                this.previousSibling.style.backgroundColor !=='pink'
-              ) {//向上走
-                let currentOverNext = this;
-                currentClickPrev  = getPrevTd(currentClickPrev);
-
-                while (currentOverNext && currentOverNext !== currentClickPrev) {
-                  currentOverNext.style.backgroundColor = "pink";
-                  currentOverNext = currentOverNext.previousSibling;
-                }
-                currentClickPrev.style.backgroundColor = "pink";
-              }
-              
-            }
             if (item !== self) {
-              item.onmouseover = handler;//这里的绑定事件不使用addEventListener,否则会绑定很多次
+              item.onmouseover = function (e) {
+                this.style.backgroundColor = "pink";
+              };//这里的绑定事件不使用addEventListener,否则会绑定很多次
+            }
+            item.onmouseleave = function (e) {
+              
             }
             document.addEventListener("mouseup", function (e) {
-              item.onmouseover=null;
+              item.onmouseover = null;
+              item.onmouseleave = null;
             })
           }
 
@@ -283,7 +266,7 @@ const Graph: FC = () => {
           item.style.backgroundColor = "white"
         }
       })
-    })
+    })*/
 
   }, [])
   const mergeHandler = () => {
@@ -314,7 +297,7 @@ const Graph: FC = () => {
   return (
     <GraphWrapper>
       <div className="graph-container" ref={graphRef}>
-        <table border="true">
+        {/*<table border="true">
           <tr>
             <td data-p={[0,0]}>前端语言</td>
             <td data-p={[0,1]}>后端语言</td>
@@ -389,7 +372,7 @@ const Graph: FC = () => {
             <td data-p={[3,3]}>Generator</td>
            </tr>
         </table>
-        <button onClick={()=>mergeHandler()}>合并单元格</button>
+  <button onClick={()=>mergeHandler()}>合并单元格</button>*/}
       </div>
     </GraphWrapper>
   );
