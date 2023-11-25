@@ -5,6 +5,7 @@ import React, {
   useEffect,
   Ref,
   useState,
+
 } from "react";
 
 import { GraphWrapper } from "./style";
@@ -26,8 +27,9 @@ interface IShap<T> {
 
 const Graph: FC = () => {
   const graphRef = useRef<HTMLDivElement | null>(null);
-  const [seleect, setSelect] = useState<any>([]);
+  const [selected, setSelect] = useState<any>([]);
   const [allTd, setAllTd] = useState<any>();
+
 
   const mousedownHandler = (e: MouseEvent) => {
     const target = e.currentTarget as HTMLDivElement;
@@ -63,7 +65,7 @@ const Graph: FC = () => {
       e.stopPropagation()
     }
     span.onmousemove = function (e) {
-      e.stopPropagation()
+      e.stopPropagation();
     }
     div.appendChild(span);
     div.ondblclick = function (e) {
